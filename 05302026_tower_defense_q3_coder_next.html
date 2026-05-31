@@ -193,6 +193,34 @@
             {x: 800, y: 500}
         ];
 
+        function generateRandomPath() {
+            const newPaths = [];
+            const numPaths = 1 + Math.floor(Math.random() * 2);
+            
+            for (let p = 0; p < numPaths; p++) {
+                const path = [{x: 0, y: 100 + p * 150}];
+                let x = 0;
+                let y = 100 + p * 150;
+                
+                while (x < 800) {
+                    const nextX = x + 50 + Math.random() * 150;
+                    if (nextX >= 800) {
+                        path.push({x: 800, y: y});
+                        break;
+                    }
+                    const nextY = y + (Math.random() - 0.5) * 200;
+                    y = Math.max(50, Math.min(550, nextY));
+                    path.push({x: nextX, y: y});
+                    x = nextX;
+                }
+                newPaths.push(path);
+            }
+            
+            return newPaths.length === 1 ? newPaths[0] : newPaths;
+        }
+
+        let gamePaths = [path];
+
         const towerTypes = {
             1: { name: "Basic", cost: 50, range: 150, damage: 20, cooldown: 40, color: "#3498db", projSpeed: 7, size: 10, damageType: "single" },
             2: { name: "Sniper", cost: 120, range: 300, damage: 100, cooldown: 120, color: "#e74c3c", projSpeed: 15, size: 6, damageType: "single" },
@@ -237,23 +265,25 @@
         }
 
         function drawPath() {
-            ctx.lineWidth = 40;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.strokeStyle = '#5d4037'; 
-            ctx.beginPath();
-            ctx.moveTo(path[0].x, path[0].y);
-            for (let i = 1; i < path.length; i++) {
-                ctx.lineTo(path[i].x, path[i].y);
-            }
-            ctx.stroke();
+            gamePaths.forEach((path, pathIndex) => {
+                ctx.lineWidth = 40;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = pathIndex === 0 ? '#5d4037' : '#795548';
+                ctx.beginPath();
+                ctx.moveTo(path[0].x, path[0].y);
+                for (let i = 1; i < path.length; i++) {
+                    ctx.lineTo(path[i].x, path[i].y);
+                }
+                ctx.stroke();
 
-            // Center line
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#8d6e63';
-            ctx.setLineDash([10, 10]);
-            ctx.stroke();
-            ctx.setLineDash([]);
+                // Center line
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#8d6e63';
+                ctx.setLineDash([10, 10]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
         }
 
         class Enemy {
@@ -568,24 +598,27 @@
         canvas.addEventListener('touchstart', handleInput, {passive: false});
 
         function isOnPath(x, y) {
-            for (let i = 0; i < path.length - 1; i++) {
-                const p1 = path[i];
-                const p2 = path[i+1];
-                const A = x - p1.x;
-                const B = y - p1.y;
-                const C = p2.x - p1.x;
-                const D = p2.y - p1.y;
-                const dot = A * C + B * D;
-                const len_sq = C * C + D * D;
-                let param = -1;
-                if (len_sq != 0) param = dot / len_sq;
-                let xx, yy;
-                if (param < 0) { xx = p1.x; yy = p1.y; }
-                else if (param > 1) { xx = p2.x; yy = p2.y; }
-                else { xx = p1.x + param * C; yy = p1.y + param * D; }
-                const dx = x - xx;
-                const dy = y - yy;
-                if (Math.sqrt(dx * dx + dy * dy) < 30) return true;
+            for (let p = 0; p < gamePaths.length; p++) {
+                const path = gamePaths[p];
+                for (let i = 0; i < path.length - 1; i++) {
+                    const p1 = path[i];
+                    const p2 = path[i+1];
+                    const A = x - p1.x;
+                    const B = y - p1.y;
+                    const C = p2.x - p1.x;
+                    const D = p2.y - p1.y;
+                    const dot = A * C + B * D;
+                    const len_sq = C * C + D * D;
+                    let param = -1;
+                    if (len_sq != 0) param = dot / len_sq;
+                    let xx, yy;
+                    if (param < 0) { xx = p1.x; yy = p1.y; }
+                    else if (param > 1) { xx = p2.x; yy = p2.y; }
+                    else { xx = p1.x + param * C; yy = p1.y + param * D; }
+                    const dx = x - xx;
+                    const dy = y - yy;
+                    if (Math.sqrt(dx * dx + dy * dy) < 30) return true;
+                }
             }
             return false;
         }
@@ -600,6 +633,11 @@
         function startWave() {
             if (waveActive) return;
             waveActive = true;
+            
+            if (wave % 5 === 0) {
+                gamePaths = [generateRandomPath()];
+            }
+            
             enemiesToSpawn = 5 + (wave * 2);
             spawning = true;
             
