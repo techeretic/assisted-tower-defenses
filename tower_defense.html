@@ -496,19 +496,13 @@
                 this.active = true;
                 this.damageType = stats.damageType || 'single';
                 this.areaRadius = stats.areaRadius || 0;
-                const dx = target.x - x;
-                const dy = target.y - y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                this.vx = (dx / dist) * this.speed;
-                this.vy = (dy / dist) * this.speed;
             }
 
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                const dx = this.x - this.target.x;
-                const dy = this.y - this.target.y;
+                const dx = this.target.x - this.x;
+                const dy = this.target.y - this.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
+                
                 if (dist < this.target.radius + this.radius) {
                     this.target.takeDamage(this.damage);
                     if (this.damageType === 'area') {
@@ -516,7 +510,12 @@
                     }
                     this.active = false;
                     if(this.damage >= 50) createParticles(this.x, this.y, '#f1c40f');
+                    return;
                 }
+                
+                this.x += (dx / dist) * this.speed;
+                this.y += (dy / dist) * this.speed;
+
                 if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
                     this.active = false;
                 }
