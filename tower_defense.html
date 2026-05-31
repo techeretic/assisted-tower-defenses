@@ -282,29 +282,22 @@
         ];
 
         function generateRandomPath() {
-            const newPaths = [];
-            const numPaths = 1 + Math.floor(Math.random() * 2);
+            const newPath = [{x: 0, y: 100}];
+            let x = 0;
+            let y = 100;
             
-            for (let p = 0; p < numPaths; p++) {
-                const path = [{x: 0, y: 100 + p * 150}];
-                let x = 0;
-                let y = 100 + p * 150;
-                
-                while (x < 800) {
-                    const nextX = x + 50 + Math.random() * 150;
-                    if (nextX >= 800) {
-                        path.push({x: 800, y: y});
-                        break;
-                    }
-                    const nextY = y + (Math.random() - 0.5) * 200;
-                    y = Math.max(50, Math.min(550, nextY));
-                    path.push({x: nextX, y: y});
-                    x = nextX;
+            while (x < 800) {
+                const nextX = x + 50 + Math.random() * 150;
+                if (nextX >= 800) {
+                    newPath.push({x: 800, y: y});
+                    break;
                 }
-                newPaths.push(path);
+                const nextY = y + (Math.random() - 0.5) * 200;
+                y = Math.max(50, Math.min(550, nextY));
+                newPath.push({x: nextX, y: y});
+                x = nextX;
             }
-            
-            return newPaths.length === 1 ? newPaths[0] : newPaths;
+            return newPath;
         }
 
         let gamePaths = [path];
