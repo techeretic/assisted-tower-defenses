@@ -983,6 +983,7 @@
         canvas.addEventListener('touchstart', handleInput, {passive: false});
         
         updateUI();
+        console.log("Checking loadGame...");
         if (!loadGame()) {
             gameLoop();
         }
