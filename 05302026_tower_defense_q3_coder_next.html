@@ -718,6 +718,7 @@
             if (Math.random() < 0.2) {
                 powerups.push(new PowerUp(x, y));
             }
+            vibrate(30);
         }
         
         function showFloatingText(x, y, text, color) {
@@ -1079,6 +1080,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
+                vibrate(50);
             } else if (type === 'explosion') {
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(100, now);
@@ -1087,6 +1089,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                 osc.start(now);
                 osc.stop(now + 0.3);
+                vibrate(200);
             } else if (type === 'waveStart') {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(400, now);
@@ -1114,6 +1117,12 @@
             settingsOpen = !settingsOpen;
             const overlay = document.getElementById('settings-overlay');
             overlay.classList.toggle('active', settingsOpen);
+        }
+        
+        function vibrate(duration) {
+            if (navigator.vibrate) {
+                navigator.vibrate(duration);
+            }
         }
 
     </script>
