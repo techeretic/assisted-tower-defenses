@@ -17,17 +17,29 @@ python3 -m http.server 8080
 
 ## How to play
 
-1. Select **Basic Tower** ($50) or **Sniper Tower** ($120).
-2. Tap or click empty ground (not on the brown path) to place a tower.
-3. Press **Start Wave** to spawn enemies. Clear the wave to advance; each wave increases enemy health, speed, and rewards.
-4. Enemies that reach the end of the path cost one life. The game ends at 0 lives.
+1. **Select a tower type** from the controls at the bottom
+2. **Place towers** by tapping or clicking empty ground (not on the brown path)
+3. **Start waves** to spawn enemies; clear each wave to advance
+4. **Collect power-ups** (money, heal, damage) that spawn on enemy death
+5. Enemies that reach the end cost one life. The game ends at 0 lives.
 
 ## Features
 
-- Two tower types with different range, damage, fire rate, and projectile speed
-- Wave-based spawning with scaling difficulty
-- Touch and mouse input with coordinate scaling for responsive layout
-- Particle effects on kills and heavy hits
+- **4 tower types** with different stats:
+  - Basic (balanced range/damage)
+  - Sniper (long range, high damage, slow fire rate)
+  - Rapid (short range, fast fire rate, low damage)
+  - AOE (short range, area damage on impact)
+- **4 enemy variations**: Normal, Fast, Tank, Flying
+- **Boss enemies** every 10 waves with special visuals and rewards
+- **Power-ups** (money, heal, damage) spawn randomly on enemy death
+- **5 paths** that regenerate randomly every 5 waves
+- **Pause/Resume** functionality
+- **Save/Load** game state via localStorage
+- **Sound effects** (Web Audio API)
+- **Vibration feedback** on mobile devices
+- **Touch and mouse input** with coordinate scaling for responsive layout
+- **Floating damage numbers** and particle effects
 
 ## Project layout
 
@@ -39,7 +51,9 @@ python3 -m http.server 8080
 ## Tech stack
 
 - HTML5 `<canvas>` (internal resolution 800×600)
-- Vanilla ES6 classes (`Enemy`, `Tower`, `Projectile`, `Particle`)
+- Vanilla ES6 classes (`Enemy`, `Tower`, `Projectile`, `Particle`, `PowerUp`, `FloatingText`)
+- Web Audio API for sound effects
+- localStorage for save/load functionality
 - CSS for mobile layout (`touch-action`, responsive container, 4:3 aspect ratio)
 
 ## Repository
