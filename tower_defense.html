@@ -242,7 +242,7 @@
             // However, to make clicks accurate, we need to calculate scale factors
             
             canvas.style.width = '100%';
-            canvas.style.height = 'auto';
+            // Don't override height - let it use the CSS height: 600px
         }
         
         window.addEventListener('resize', resizeCanvas);
