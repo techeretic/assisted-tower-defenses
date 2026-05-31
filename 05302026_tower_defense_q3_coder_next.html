@@ -90,6 +90,8 @@
         .btn-tower4 { background-color: #9b59b6; color: white; }
         .btn-wave { background-color: #f1c40f; color: black; font-size: 1.2rem; flex: 2; }
         .btn-pause { background-color: #95a5a6; color: white; flex: 1; }
+        .btn-save { background-color: #27ae60; color: white; flex: 1; }
+        .btn-clear { background-color: #c0392b; color: white; flex: 1; }
         button.active { box-shadow: 0 0 15px white; border: 2px solid white; }
 
         #game-over {
@@ -149,6 +151,8 @@
                 <button id="btn-tower4" class="btn-tower4" ontouchstart="selectTower(4)" onclick="selectTower(4)">AOE Tower<br><small>$150</small></button>
                 <button id="btn-wave" class="btn-wave" ontouchstart="startWave()" onclick="startWave()">Start Wave</button>
                 <button id="btn-pause" class="btn-pause" ontouchstart="togglePause()" onclick="togglePause()">Pause</button>
+                <button id="btn-save" class="btn-save" ontouchstart="saveGame()" onclick="saveGame()">Save</button>
+                <button id="btn-clear" class="btn-clear" ontouchstart="clearTowers()" onclick="clearTowers()">Clear</button>
             </div>
         </div>
     </div>
@@ -171,6 +175,7 @@
         let towers = [];
         let projectiles = [];
         let particles = [];
+        let powerups = [];
         let selectedTowerType = 1;
         let enemiesToSpawn = 0;
         let spawning = false;
@@ -494,15 +499,54 @@
             }
         }
 
+        class PowerUp {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 15;
+                this.active = true;
+                const types = ['money', 'heal', 'damage'];
+                this.type = types[Math.floor(Math.random() * types.length)];
+                this.life = 600;
+            }
+            update() {
+                this.life--;
+                if (this.life <= 0) this.active = false;
+            }
+            draw() {
+                if (this.type === 'money') {
+                    ctx.fillStyle = '#f1c40f';
+                } else if (this.type === 'heal') {
+                    ctx.fillStyle = '#2ecc71';
+                } else {
+                    ctx.fillStyle = '#e74c3c';
+                }
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.type[0].toUpperCase(), this.x, this.y);
+            }
+        }
+
         function createParticles(x, y, color) {
             for(let i=0; i<8; i++) {
                 particles.push(new Particle(x, y, color));
+            }
+            if (Math.random() < 0.2) {
+                powerups.push(new PowerUp(x, y));
             }
         }
 
         // Input Handling (Mouse AND Touch)
         function handleInput(e) {
-            if (!gameActive) return;
+            if (!gameActive || paused) return;
             e.preventDefault(); // Prevent default touch actions
 
             const { x, y } = getCanvasCoordinates(e);
@@ -612,6 +656,69 @@
             btn.style.backgroundColor = paused ? "#f1c40f" : "#95a5a6";
         }
 
+        function saveGame() {
+            const saveData = {
+                money: money,
+                lives: lives,
+                wave: wave,
+                towers: towers.map(t => ({x: t.x, y: t.y, type: t.type})),
+                enemies: enemies.map(e => ({x: e.x, y: e.y, health: e.health, pathIndex: e.pathIndex, type: e.type})),
+                waveActive: waveActive,
+                paused: paused,
+                selectedTowerType: selectedTowerType
+            };
+            localStorage.setItem('towerDefenseSave', JSON.stringify(saveData));
+            const btn = document.getElementById('btn-save');
+            const originalText = btn.innerText;
+            btn.innerText = "Saved!";
+            setTimeout(() => btn.innerText = originalText, 1500);
+        }
+
+        function clearTowers() {
+            towers = [];
+            money = Math.min(money + 25, 9999);
+            updateUI();
+            const btn = document.getElementById('btn-clear');
+            const originalText = btn.innerText;
+            btn.innerText = "Towers Cleared";
+            setTimeout(() => btn.innerText = originalText, 1500);
+        }
+
+        function loadGame() {
+            const saveData = localStorage.getItem('towerDefenseSave');
+            if (!saveData) return false;
+            
+            try {
+                const data = JSON.parse(saveData);
+                money = data.money;
+                lives = data.lives;
+                wave = data.wave;
+                selectedTowerType = data.selectedTowerType || 1;
+                waveActive = data.waveActive || false;
+                paused = data.paused || false;
+                
+                towers = data.towers.map(t => new Tower(t.x, t.y, t.type));
+                enemies = data.enemies.map(e => {
+                    const enemy = new Enemy(1, e.type || 'normal');
+                    enemy.x = e.x;
+                    enemy.y = e.y;
+                    enemy.pathIndex = e.pathIndex;
+                    enemy.health = e.health;
+                    enemy.maxHealth = e.health;
+                    return enemy;
+                });
+                
+                updateUI();
+                if (paused) {
+                    togglePause();
+                }
+                return true;
+            } catch (e) {
+                console.error('Failed to load save:', e);
+                return false;
+            }
+        }
+
         function gameLoop() {
             if (!gameActive) return;
             if (paused) {
@@ -647,19 +754,48 @@
                 if (p.life <= 0) particles.splice(i, 1);
             }
 
-            if (enemies.length === 0 && !spawning && waveActive) {
-                waveActive = false;
-                wave++;
-                updateUI();
-                document.getElementById('btn-wave').disabled = false;
-                document.getElementById('btn-wave').innerText = "Start Wave " + wave;
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                let p = powerups[i];
+                p.update();
+                p.draw();
+                if (!p.active) {
+                    powerups.splice(i, 1);
+                    continue;
+                }
+                enemies.forEach(enemy => {
+                    const dx = enemy.x - p.x;
+                    const dy = enemy.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < enemy.radius + p.radius && p.active) {
+                        if (p.type === 'money') {
+                            money += 50;
+                        } else if (p.type === 'heal') {
+                            lives += 5;
+                        } else if (p.type === 'damage') {
+                            enemies.forEach(e => e.takeDamage(25));
+                        }
+                        p.active = false;
+                        updateUI();
+                    }
+                });
+            }
+
+                if (enemies.length === 0 && !spawning && waveActive && !paused) {
+                    waveActive = false;
+                    wave++;
+                    updateUI();
+                    document.getElementById('btn-wave').disabled = false;
+                    document.getElementById('btn-wave').innerText = "Start Wave " + wave;
+                }
             }
 
             requestAnimationFrame(gameLoop);
         }
 
         updateUI();
-        gameLoop();
+        if (!loadGame()) {
+            gameLoop();
+        }
 
     </script>
 </body>
