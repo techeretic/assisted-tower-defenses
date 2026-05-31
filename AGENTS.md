@@ -4,14 +4,14 @@
 
 This repo is a **minimal, single-file browser game**. All gameplay, rendering, styles, and UI live in one HTML file. There is no package manager, bundler, test runner, or CI. Changes are validated by opening the HTML file in a browser and playing manually.
 
-**Canonical source file:** `05302026_tower_defense_q3_coder_next.html`
+**Canonical source file:** `tower_defense.html`
 
 ## How to run and verify
 
 | Action | Command |
 |--------|---------|
-| Open game (macOS) | `open 05302026_tower_defense_q3_coder_next.html` |
-| Local static server | `python3 -m http.server 8080` then open `http://localhost:8080/05302026_tower_defense_q3_coder_next.html` |
+| Open game (macOS) | `open tower_defense.html` |
+| Local static server | `python3 -m http.server 8080` then open `http://localhost:8080/tower_defense.html` |
 | Automated tests | None — manual play-test after edits |
 
 After changes, confirm: tower placement (mouse + touch), wave start/clear, money/lives UI, game over overlay, pause/resume, save/load, settings toggle, and that canvas clicks map correctly when the window is resized.

@@ -5,14 +5,14 @@ A single-file, mobile-friendly tower defense game built with HTML5 Canvas and va
 ## Play locally
 
 ```bash
-open 05302026_tower_defense_q3_coder_next.html
+open tower_defense.html
 ```
 
 Or serve the directory and open the file in your browser:
 
 ```bash
 python3 -m http.server 8080
-# Then visit http://localhost:8080/05302026_tower_defense_q3_coder_next.html
+# Then visit http://localhost:8080/tower_defense.html
 ```
 
 ## How to play
