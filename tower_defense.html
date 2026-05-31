@@ -377,8 +377,8 @@
         class Enemy {
             constructor(waveDifficulty, type = 'normal') {
                 this.pathIndex = 0;
-                this.x = path[0].x;
-                this.y = path[0].y;
+                this.x = gamePaths[0][0].x;
+                this.y = gamePaths[0][0].y;
                 this.radius = 12;
                 this.type = type;
                 this.boss = false;
