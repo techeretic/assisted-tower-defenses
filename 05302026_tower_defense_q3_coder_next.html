@@ -89,6 +89,7 @@
         .btn-tower3 { background-color: #f39c12; color: black; }
         .btn-tower4 { background-color: #9b59b6; color: white; }
         .btn-wave { background-color: #f1c40f; color: black; font-size: 1.2rem; flex: 2; }
+        .btn-pause { background-color: #95a5a6; color: white; flex: 1; }
         button.active { box-shadow: 0 0 15px white; border: 2px solid white; }
 
         #game-over {
@@ -147,6 +148,7 @@
                 <button id="btn-tower3" class="btn-tower3" ontouchstart="selectTower(3)" onclick="selectTower(3)">Rapid Tower<br><small>$80</small></button>
                 <button id="btn-tower4" class="btn-tower4" ontouchstart="selectTower(4)" onclick="selectTower(4)">AOE Tower<br><small>$150</small></button>
                 <button id="btn-wave" class="btn-wave" ontouchstart="startWave()" onclick="startWave()">Start Wave</button>
+                <button id="btn-pause" class="btn-pause" ontouchstart="togglePause()" onclick="togglePause()">Pause</button>
             </div>
         </div>
     </div>
@@ -164,6 +166,7 @@
         let lives = 20;
         let wave = 1;
         let gameActive = true;
+        let paused = false;
         let enemies = [];
         let towers = [];
         let projectiles = [];
@@ -249,15 +252,34 @@
         }
 
         class Enemy {
-            constructor(waveDifficulty) {
+            constructor(waveDifficulty, type = 'normal') {
                 this.pathIndex = 0;
                 this.x = path[0].x;
                 this.y = path[0].y;
                 this.radius = 12;
-                this.speed = 1.5 + (waveDifficulty * 0.1);
-                this.health = 100 + (waveDifficulty * 50);
+                this.type = type;
+                
+                if (type === 'fast') {
+                    this.radius = 8;
+                    this.speed = 3 + (waveDifficulty * 0.1);
+                    this.health = 50 + (waveDifficulty * 25);
+                    this.reward = 20 + (waveDifficulty * 5);
+                } else if (type === 'tank') {
+                    this.radius = 18;
+                    this.speed = 0.8 + (waveDifficulty * 0.05);
+                    this.health = 200 + (waveDifficulty * 75);
+                    this.reward = 25 + (waveDifficulty * 10);
+                } else if (type === 'flying') {
+                    this.radius = 10;
+                    this.speed = 2 + (waveDifficulty * 0.1);
+                    this.health = 80 + (waveDifficulty * 40);
+                    this.reward = 30 + (waveDifficulty * 8);
+                } else {
+                    this.speed = 1.5 + (waveDifficulty * 0.1);
+                    this.health = 100 + (waveDifficulty * 50);
+                    this.reward = 15 + (waveDifficulty * 5);
+                }
                 this.maxHealth = this.health;
-                this.reward = 15 + (waveDifficulty * 5);
             }
 
             update() {
@@ -282,10 +304,29 @@
             }
 
             draw() {
-                ctx.fillStyle = '#8e44ad';
+                ctx.fillStyle = this.type === 'flying' ? '#3498db' : '#8e44ad';
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fill();
+                
+                if (this.type === 'tank') {
+                    ctx.strokeStyle = '#e74c3c';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (this.type === 'fast') {
+                    ctx.fillStyle = '#2ecc71';
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y - this.radius);
+                    ctx.lineTo(this.x - 5, this.y + this.radius);
+                    ctx.lineTo(this.x + 5, this.y + this.radius);
+                    ctx.fill();
+                } else if (this.type === 'flying') {
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y + 5, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
                 const hpPercent = this.health / this.maxHealth;
                 ctx.fillStyle = 'red';
                 ctx.fillRect(this.x - 10, this.y - 20, 20, 4);
@@ -297,7 +338,13 @@
                 this.health -= amount;
                 if (this.health <= 0) {
                     money += this.reward;
-                    createParticles(this.x, this.y, '#8e44ad');
+                    if (this.type === 'flying') {
+                        createParticles(this.x, this.y, '#3498db');
+                    } else if (this.type === 'tank') {
+                        createParticles(this.x, this.y, '#e74c3c');
+                    } else {
+                        createParticles(this.x, this.y, '#8e44ad');
+                    }
                     updateUI();
                 }
             }
@@ -512,13 +559,26 @@
             enemiesToSpawn = 5 + (wave * 2);
             spawning = true;
             
-            const spawnBtn = document.getElementById('btn-wave');
-            spawnBtn.disabled = true;
-            spawnBtn.innerText = "Wave in Progress...";
-
+            let fast spawned = 0;
+            let tankSpawned = 0;
+            let flyingSpawned = 0;
+            
             let spawnInterval = setInterval(() => {
                 if (enemiesToSpawn > 0) {
-                    enemies.push(new Enemy(wave));
+                    let enemyType = 'normal';
+                    
+                    if (wave >= 3 && Math.random() < 0.2) {
+                        enemyType = 'fast';
+                        fastSpawned++;
+                    } else if (wave >= 5 && Math.random() < 0.15) {
+                        enemyType = 'tank';
+                        tankSpawned++;
+                    } else if (wave >= 7 && Math.random() < 0.1) {
+                        enemyType = 'flying';
+                        flyingSpawned++;
+                    }
+                    
+                    enemies.push(new Enemy(wave, enemyType));
                     enemiesToSpawn--;
                 } else {
                     clearInterval(spawnInterval);
@@ -531,6 +591,10 @@
             document.getElementById('lives').innerText = lives;
             document.getElementById('money').innerText = money;
             document.getElementById('wave').innerText = wave;
+            document.getElementById('btn-wave').disabled = waveActive || spawning || paused;
+            if (!waveActive && !spawning && !paused) {
+                document.getElementById('btn-wave').innerText = "Start Wave " + wave;
+            }
         }
 
         function endGame() {
@@ -540,8 +604,20 @@
             document.getElementById('btn-wave').disabled = true;
         }
 
+        function togglePause() {
+            if (!gameActive) return;
+            paused = !paused;
+            const btn = document.getElementById('btn-pause');
+            btn.innerText = paused ? "Resume" : "Pause";
+            btn.style.backgroundColor = paused ? "#f1c40f" : "#95a5a6";
+        }
+
         function gameLoop() {
             if (!gameActive) return;
+            if (paused) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPath();
 
@@ -551,7 +627,10 @@
                 let enemy = enemies[i];
                 enemy.update();
                 enemy.draw();
-                if (enemy.health <= 0) enemies.splice(i, 1);
+                if (enemy.health <= 0) {
+                    money += enemy.reward;
+                    enemies.splice(i, 1);
+                }
             }
 
             for (let i = projectiles.length - 1; i >= 0; i--) {
