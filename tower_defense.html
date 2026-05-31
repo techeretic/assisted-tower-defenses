@@ -299,32 +299,34 @@
                 this.boss = false;
                 this.lastDamageTime = 0;
 
+                const difficultyMultiplier = 1 + ((waveDifficulty - 1) * 0.15);
+
                 if (type === 'fast') {
                     this.radius = 8;
-                    this.speed = 3 + (waveDifficulty * 0.1);
-                    this.health = 50 + (waveDifficulty * 25);
+                    this.speed = 2.5 * difficultyMultiplier;
+                    this.health = 50 * difficultyMultiplier;
                     this.reward = 20 + (waveDifficulty * 5);
                 } else if (type === 'tank') {
                     this.radius = 18;
-                    this.speed = 0.8 + (waveDifficulty * 0.05);
-                    this.health = 200 + (waveDifficulty * 75);
+                    this.speed = 0.8 * difficultyMultiplier;
+                    this.health = 200 * difficultyMultiplier;
                     this.reward = 25 + (waveDifficulty * 10);
                 } else if (type === 'flying') {
                     this.radius = 10;
-                    this.speed = 2 + (waveDifficulty * 0.1);
-                    this.health = 80 + (waveDifficulty * 40);
+                    this.speed = 2 * difficultyMultiplier;
+                    this.health = 80 * difficultyMultiplier;
                     this.reward = 30 + (waveDifficulty * 8);
                 } else {
-                    this.speed = 1.5 + (waveDifficulty * 0.1);
-                    this.health = 100 + (waveDifficulty * 50);
+                    this.speed = 1.5 * difficultyMultiplier;
+                    this.health = 100 * difficultyMultiplier;
                     this.reward = 15 + (waveDifficulty * 5);
                 }
 
                 if (type === 'boss') {
                     this.radius = 25;
-                    this.speed = 0.5 + (waveDifficulty * 0.05);
-                    this.health = 500 + (waveDifficulty * 200);
-                    this.reward = 100 + (waveDifficulty * 50);
+                    this.speed = 0.5 * difficultyMultiplier;
+                    this.health = 1000 * difficultyMultiplier;
+                    this.reward = 500 + (waveDifficulty * 100);
                     this.boss = true;
                 }
                 this.maxHealth = this.health;
@@ -779,7 +781,7 @@
         function startWave() {
             if (waveActive) return;
             waveActive = true;
-            enemiesToSpawn = 5 + (wave * 2);
+            enemiesToSpawn = 5 + (wave * 3);
             spawning = true;
             
             let normalSpawned = 0;
