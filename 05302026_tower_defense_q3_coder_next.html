@@ -293,6 +293,7 @@
                 this.y = path[0].y;
                 this.radius = 12;
                 this.type = type;
+                this.boss = false;
                 
                 if (type === 'fast') {
                     this.radius = 8;
@@ -314,6 +315,15 @@
                     this.health = 100 + (waveDifficulty * 50);
                     this.reward = 15 + (waveDifficulty * 5);
                 }
+                
+                if (type === 'boss') {
+                    this.radius = 25;
+                    this.speed = 0.5 + (waveDifficulty * 0.05);
+                    this.health = 500 + (waveDifficulty * 200);
+                    this.reward = 100 + (waveDifficulty * 50);
+                    this.boss = true;
+                }
+                
                 this.maxHealth = this.health;
             }
 
@@ -339,27 +349,42 @@
             }
 
             draw() {
-                ctx.fillStyle = this.type === 'flying' ? '#3498db' : '#8e44ad';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                if (this.type === 'tank') {
+                if (this.boss) {
+                    ctx.fillStyle = '#c0392b';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
                     ctx.strokeStyle = '#e74c3c';
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 3;
                     ctx.stroke();
-                } else if (this.type === 'fast') {
-                    ctx.fillStyle = '#2ecc71';
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('BOSS', this.x, this.y);
+                } else {
+                    ctx.fillStyle = this.type === 'flying' ? '#3498db' : '#8e44ad';
                     ctx.beginPath();
-                    ctx.moveTo(this.x, this.y - this.radius);
-                    ctx.lineTo(this.x - 5, this.y + this.radius);
-                    ctx.lineTo(this.x + 5, this.y + this.radius);
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                     ctx.fill();
-                } else if (this.type === 'flying') {
-                    ctx.fillStyle = '#f1c40f';
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y + 5, 4, 0, Math.PI * 2);
-                    ctx.fill();
+                    
+                    if (this.type === 'tank') {
+                        ctx.strokeStyle = '#e74c3c';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    } else if (this.type === 'fast') {
+                        ctx.fillStyle = '#2ecc71';
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y - this.radius);
+                        ctx.lineTo(this.x - 5, this.y + this.radius);
+                        ctx.lineTo(this.x + 5, this.y + this.radius);
+                        ctx.fill();
+                    } else if (this.type === 'flying') {
+                        ctx.fillStyle = '#f1c40f';
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y + 5, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
                 
                 const hpPercent = this.health / this.maxHealth;
@@ -373,7 +398,10 @@
                 this.health -= amount;
                 if (this.health <= 0) {
                     money += this.reward;
-                    if (this.type === 'flying') {
+                    if (this.boss) {
+                        createParticles(this.x, this.y, '#e74c3c');
+                        money += 500;
+                    } else if (this.type === 'flying') {
                         createParticles(this.x, this.y, '#3498db');
                     } else if (this.type === 'tank') {
                         createParticles(this.x, this.y, '#e74c3c');
@@ -641,7 +669,8 @@
             enemiesToSpawn = 5 + (wave * 2);
             spawning = true;
             
-            let fast spawned = 0;
+            let normalSpawned = 0;
+            let fastSpawned = 0;
             let tankSpawned = 0;
             let flyingSpawned = 0;
             
@@ -649,7 +678,10 @@
                 if (enemiesToSpawn > 0) {
                     let enemyType = 'normal';
                     
-                    if (wave >= 3 && Math.random() < 0.2) {
+                    if (wave % 10 === 0 && normalSpawned === 0) {
+                        enemyType = 'boss';
+                        normalSpawned++;
+                    } else if (wave >= 3 && Math.random() < 0.2) {
                         enemyType = 'fast';
                         fastSpawned++;
                     } else if (wave >= 5 && Math.random() < 0.15) {
@@ -658,6 +690,8 @@
                     } else if (wave >= 7 && Math.random() < 0.1) {
                         enemyType = 'flying';
                         flyingSpawned++;
+                    } else {
+                        normalSpawned++;
                     }
                     
                     enemies.push(new Enemy(wave, enemyType));
