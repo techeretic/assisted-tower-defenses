@@ -176,6 +176,7 @@
         let projectiles = [];
         let particles = [];
         let powerups = [];
+        let floatingTexts = [];
         let selectedTowerType = 1;
         let enemiesToSpawn = 0;
         let spawning = false;
@@ -294,6 +295,7 @@
                 this.radius = 12;
                 this.type = type;
                 this.boss = false;
+                this.lastDamageTime = 0;
                 
                 if (type === 'fast') {
                     this.radius = 8;
@@ -396,11 +398,17 @@
 
             takeDamage(amount) {
                 this.health -= amount;
+                const now = Date.now();
+                if (now - this.lastDamageTime > 500) {
+                    showFloatingText(this.x, this.y - 20, amount, this.boss ? '#e74c3c' : '#ffffff');
+                    this.lastDamageTime = now;
+                }
                 if (this.health <= 0) {
                     money += this.reward;
                     if (this.boss) {
                         createParticles(this.x, this.y, '#e74c3c');
                         money += 500;
+                        showFloatingText(this.x, this.y, 'BOSS DEFEATED!', '#e74c3c');
                     } else if (this.type === 'flying') {
                         createParticles(this.x, this.y, '#3498db');
                     } else if (this.type === 'tank') {
@@ -532,6 +540,29 @@
             }
         }
 
+        class FloatingText {
+            constructor(x, y, text, color = 'white') {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.life = 1.0;
+                this.speedY = -1;
+            }
+            update() {
+                this.y += this.speedY;
+                this.life -= 0.02;
+            }
+            draw() {
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fillStyle = this.color;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
         class Particle {
             constructor(x, y, color) {
                 this.x = x;
@@ -600,6 +631,10 @@
             if (Math.random() < 0.2) {
                 powerups.push(new PowerUp(x, y));
             }
+        }
+        
+        function showFloatingText(x, y, text, color) {
+            floatingTexts.push(new FloatingText(x, y, text, color));
         }
 
         // Input Handling (Mouse AND Touch)
@@ -850,6 +885,13 @@
                         updateUI();
                     }
                 });
+            }
+
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i];
+                ft.update();
+                ft.draw();
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
             }
 
                 if (enemies.length === 0 && !spawning && waveActive && !paused) {
