@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repo is a **minimal, single-file browser game**. All gameplay, rendering, styles, and UI live in one HTML file. There is no package manager, bundler, test runner, or CI. Changes are validated by opening the HTML file in a browser and playing manually.
+This repo is a **minimal, single-file browser game** with a **unit-test suite**. All gameplay, rendering, styles, and UI live in one HTML file. The game needs no package manager or build step — Jest is used only for testing.
 
 **Canonical source file:** `tower_defense.html`
 
@@ -12,9 +12,9 @@ This repo is a **minimal, single-file browser game**. All gameplay, rendering, s
 |--------|---------|
 | Open game (macOS) | `open tower_defense.html` |
 | Local static server | `python3 -m http.server 8080` then open `http://localhost:8080/tower_defense.html` |
-| Automated tests | None — manual play-test after edits |
+| Run automated tests (76) | `npm test` |
 
-After changes, confirm: tower placement (mouse + touch), wave start/clear, money/lives UI, game over overlay, pause/resume, save/load, settings toggle, and that canvas clicks map correctly when the window is resized.
+After changes, run `npm test` then play-test manually to confirm: tower placement (mouse + touch), wave start/clear, money/lives UI, game over overlay, pause/resume, save/load, settings toggle, and that canvas clicks map correctly when the window is resized.
 
 ## Architecture (inside the HTML file)
 
@@ -68,7 +68,7 @@ After changes, confirm: tower placement (mouse + touch), wave start/clear, money
 
 - **Minimize scope:** This is a small hobby project; avoid introducing frameworks, npm, or large refactors unless requested.
 - **No secrets:** Nothing to configure; do not add API keys or env files.
-- **No test churn:** Do not add trivial test scaffolding unless the user asks.
+- **No test churn:** Do not add trivial test scaffolding unless the user asks. The existing tests in `__tests__/game.test.js` should be sufficient; only add new test files when introducing new functionality.
 - **Filename:** The dated HTML filename is the deployed artifact; if renaming, update README and any docs that reference it.
 
 ## When to add `.cursor/rules/`

@@ -23,6 +23,14 @@ python3 -m http.server 8080
 4. **Collect power-ups** (money, heal, damage) that spawn on enemy death
 5. Enemies that reach the end cost one life. The game ends at 0 lives.
 
+## Testing
+
+```bash
+npm test
+```
+
+76 unit tests cover core game logic (`isOnPath`, `Enemy`, `Tower`, `Projectile`), input handling (`handleInput`, `getCanvasCoordinates`), state management (`saveGame`/`loadGame`, `togglePause`, `startWave`, `endGame`), and edge cases. Tests use Jest with jsdom and mock browser APIs (Canvas, AudioContext, localStorage).
+
 ## Features
 
 - **4 tower types** with different stats:
@@ -45,8 +53,12 @@ python3 -m http.server 8080
 
 | File | Description |
 |------|-------------|
-| `05302026_tower_defense_q3_coder_next.html` | Entire game: markup, styles, and logic |
+| `tower_defense.html` | Entire game: markup, styles, and logic |
 | `AGENTS.md` | Instructions for AI coding agents working in this repo |
+| `package.json` | Jest test runner configuration |
+| `jest.config.js` | Jest environment setup (jsdom) |
+| `jest.setup.js` | Browser API mocks (Canvas, AudioContext, localStorage) |
+| `__tests__/game.test.js` | 76 unit tests for game logic and state management |
 
 ## Tech stack
 
