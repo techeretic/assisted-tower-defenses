@@ -179,7 +179,7 @@ describe('Enemy', () => {
   });
   test('scales with wave', () => {
     const e5 = new G.Enemy(5);
-    const m = 1 + 4 * 0.15;
+    const m = 1 + 4 * 0.20;
     expect(e5.health).toBeCloseTo(100 * m, 0);
     expect(e5.speed).toBeCloseTo(1.5 * m, 1);
   });
