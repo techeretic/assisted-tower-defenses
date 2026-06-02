@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
@@ -15,15 +15,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        window.statusBarColor = Color.parseColor("#CF222222")
-        window.navigationBarColor = Color.parseColor("#CF222222")
-
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+        val root = FrameLayout(this)
+        root.setBackgroundColor(Color.parseColor("#FF222222"))
 
         val webView = WebView(this)
-        setContentView(webView)
+        root.addView(webView, FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ))
+
+        setContentView(root)
 
         with(webView.settings) {
             javaScriptEnabled = true
@@ -41,8 +42,15 @@ class MainActivity : AppCompatActivity() {
         webView.webChromeClient = WebChromeClient()
         webView.webViewClient = WebViewClient()
 
-        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val systemBars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or
+                WindowInsetsCompat.Type.displayCutout()
+            )
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }

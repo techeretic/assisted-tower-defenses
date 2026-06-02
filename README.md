@@ -4,6 +4,8 @@ A single-file, mobile-friendly tower defense game built with HTML5 Canvas and va
 
 ## Play locally
 
+### Desktop browser
+
 ```bash
 open tower_defense.html
 ```
@@ -13,6 +15,18 @@ Or serve the directory and open the file in your browser:
 ```bash
 python3 -m http.server 8080
 # Then visit http://localhost:8080/tower_defense.html
+```
+
+### Android (APK)
+
+Build and install on a connected device:
+
+```bash
+cp tower_defense.html TowerDefenseApp/app/src/main/assets/
+cd TowerDefenseApp
+./gradlew clean assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell am start -n com.towerdefense/.MainActivity
 ```
 
 ## How to play
@@ -48,12 +62,17 @@ npm test
 - **Vibration feedback** on mobile devices
 - **Touch and mouse input** with coordinate scaling for responsive layout
 - **Floating damage numbers** and particle effects
+- **Android app** wrapping the game in a WebView with high-score persistence via Kotlin bridge
 
 ## Project layout
 
 | File | Description |
 |------|-------------|
 | `tower_defense.html` | Entire game: markup, styles, and logic |
+| `TowerDefenseApp/` | Android project wrapping the game in a WebView |
+| `TowerDefenseApp/…/MainActivity.kt` | WebView setup, edge-to-edge layout, status bar handling |
+| `TowerDefenseApp/…/ScoreStore.kt` | `@JavascriptInterface` bridge for high-score persistence |
+| `docs/android-app-design.md` | Android app technical design document |
 | `AGENTS.md` | Instructions for AI coding agents working in this repo |
 | `package.json` | Jest test runner configuration |
 | `jest.config.js` | Jest environment setup (jsdom) |

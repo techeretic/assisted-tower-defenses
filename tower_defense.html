@@ -85,7 +85,8 @@
         .btn-tower2 { background-color: #e74c3c; color: white; }
         .btn-tower3 { background-color: #f39c12; color: black; }
         .btn-tower4 { background-color: #9b59b6; color: white; }
-        .btn-wave { background-color: #f1c40f; color: black; font-size: 0.85rem; flex: 2; }
+        .wave-row { display: flex; padding: 6px 0; }
+        .btn-wave { background-color: #f1c40f; color: black; font-size: 1.1rem; padding: 14px; flex: 1; }
         .btn-pause { background-color: #95a5a6; color: white; flex: 1; }
         .btn-save { background-color: #27ae60; color: white; flex: 1; }
         .btn-clear { background-color: #c0392b; color: white; flex: 1; }
@@ -196,11 +197,13 @@
             <button id="btn-tower2" class="btn-tower2" onclick="selectTower(2)">Sniper<br><small>$120</small></button>
             <button id="btn-tower3" class="btn-tower3" onclick="selectTower(3)">Rapid<br><small>$80</small></button>
             <button id="btn-tower4" class="btn-tower4" onclick="selectTower(4)">AOE<br><small>$150</small></button>
-            <button id="btn-wave" class="btn-wave" onclick="startWave()">Start Wave</button>
             <button id="btn-pause" class="btn-pause" onclick="togglePause()">Pause</button>
             <button id="btn-save" class="btn-save" onclick="saveGame()">Save</button>
             <button id="btn-clear" class="btn-clear" onclick="clearTowers()">Clear</button>
             <button id="btn-sound" class="btn-sound" onclick="toggleSound()">Sound: OFF</button>
+        </div>
+        <div class="wave-row">
+            <button id="btn-wave" class="btn-wave" onclick="startWave()">Start Wave</button>
         </div>
     </div>
 
