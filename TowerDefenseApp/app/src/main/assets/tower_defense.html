@@ -303,9 +303,9 @@
                 this.boss = false;
                 this.lastDamageTime = 0;
 
-                const difficultyMultiplier = waveDifficulty <= 2
-                    ? 1 + ((waveDifficulty - 1) * 0.15)
-                    : 1 + ((waveDifficulty - 1) * 0.20);
+                const difficultyMultiplier = waveDifficulty <= 1
+                    ? 1
+                    : 2 * (1 + ((waveDifficulty - 1) * 0.15));
 
                 if (type === 'fast') {
                     this.radius = 8;
@@ -791,7 +791,7 @@
         function startWave() {
             if (waveActive) return;
             waveActive = true;
-            enemiesToSpawn = 5 + (wave * 3) + (wave > 2 ? (wave - 2) * 2 : 0);
+            enemiesToSpawn = wave <= 1 ? 5 + (wave * 3) : (5 + (wave * 3)) * 2;
             spawning = true;
             
             let normalSpawned = 0;

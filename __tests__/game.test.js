@@ -178,8 +178,11 @@ describe('Enemy', () => {
     expect(e.maxHealth).toBe(e.health);
   });
   test('scales with wave', () => {
+    const e1 = new G.Enemy(1);
+    expect(e1.health).toBeCloseTo(100, 0);
+    expect(e1.speed).toBeCloseTo(1.5, 1);
     const e5 = new G.Enemy(5);
-    const m = 1 + 4 * 0.20;
+    const m = 2 * (1 + 4 * 0.15);
     expect(e5.health).toBeCloseTo(100 * m, 0);
     expect(e5.speed).toBeCloseTo(1.5 * m, 1);
   });
