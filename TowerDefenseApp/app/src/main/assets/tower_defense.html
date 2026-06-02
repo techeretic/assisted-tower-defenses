@@ -311,28 +311,28 @@
                     this.radius = 8;
                     this.speed = 2.5 * difficultyMultiplier;
                     this.health = 50 * difficultyMultiplier;
-                    this.reward = 20 + (waveDifficulty * 5);
+                    this.reward = 10 + (waveDifficulty * 3);
                 } else if (type === 'tank') {
                     this.radius = 18;
                     this.speed = 0.8 * difficultyMultiplier;
                     this.health = 200 * difficultyMultiplier;
-                    this.reward = 25 + (waveDifficulty * 10);
+                    this.reward = 15 + (waveDifficulty * 5);
                 } else if (type === 'flying') {
                     this.radius = 10;
                     this.speed = 2 * difficultyMultiplier;
                     this.health = 80 * difficultyMultiplier;
-                    this.reward = 30 + (waveDifficulty * 8);
+                    this.reward = 15 + (waveDifficulty * 4);
                 } else {
                     this.speed = 1.5 * difficultyMultiplier;
                     this.health = 100 * difficultyMultiplier;
-                    this.reward = 15 + (waveDifficulty * 5);
+                    this.reward = 10 + (waveDifficulty * 2);
                 }
 
                 if (type === 'boss') {
                     this.radius = 25;
                     this.speed = 0.5 * difficultyMultiplier;
                     this.health = 1000 * difficultyMultiplier;
-                    this.reward = 500 + (waveDifficulty * 100);
+                    this.reward = 250 + (waveDifficulty * 50);
                     this.boss = true;
                 }
                 this.maxHealth = this.health;
@@ -412,18 +412,11 @@
                     showFloatingText(this.x, this.y - 20, amount, this.boss ? '#e74c3c' : '#ffffff');
                     this.lastDamageTime = now;
                 }
-                if (this.health <= 0) {
+                    if (this.health <= 0) {
                     money += this.reward;
                     if (this.boss) {
                         createParticles(this.x, this.y, '#e74c3c');
-                        money += 500;
                         showFloatingText(this.x, this.y, 'BOSS DEFEATED!', '#e74c3c');
-                    } else if (this.type === 'flying') {
-                        createParticles(this.x, this.y, '#3498db');
-                    } else if (this.type === 'tank') {
-                        createParticles(this.x, this.y, '#e74c3c');
-                    } else {
-                        createParticles(this.x, this.y, '#8e44ad');
                     }
                     updateUI();
                 }
@@ -580,7 +573,7 @@
                 this.y = y;
                 this.radius = 15;
                 this.active = true;
-                const types = ['money', 'heal', 'damage'];
+                const types = ['heal', 'damage'];
                 this.type = types[Math.floor(Math.random() * types.length)];
                 this.life = 600;
             }
@@ -589,9 +582,7 @@
                 if (this.life <= 0) this.active = false;
             }
             draw() {
-                if (this.type === 'money') {
-                    ctx.fillStyle = '#f1c40f';
-                } else if (this.type === 'heal') {
+                if (this.type === 'heal') {
                     ctx.fillStyle = '#2ecc71';
                 } else {
                     ctx.fillStyle = '#e74c3c';
@@ -917,8 +908,6 @@
 
         function clearTowers() {
             towers = [];
-            totalMoneyEarned += 25;
-            money = Math.min(money + 25, 9999);
             updateUI();
             const btn = document.getElementById('btn-clear');
             const originalText = btn.innerText;
@@ -1005,8 +994,7 @@
                     const dy = enemy.y - p.y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     if (dist < enemy.radius + p.radius && p.active) {
-                        if (p.type === 'money') { money += 50; totalMoneyEarned += 50; }
-                        else if (p.type === 'heal') lives += 5;
+                        if (p.type === 'heal') lives += 5;
                         else if (p.type === 'damage') enemies.forEach(e => e.takeDamage(25));
                         p.active = false;
                         updateUI();

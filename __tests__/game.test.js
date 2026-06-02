@@ -172,7 +172,7 @@ describe('Enemy', () => {
     const e = new G.Enemy(1);
     expect(e.health).toBeCloseTo(100, 0);
     expect(e.speed).toBeCloseTo(1.5, 1);
-    expect(e.reward).toBe(20);
+    expect(e.reward).toBe(12);
     expect(e.x).toBe(0);
     expect(e.y).toBe(100);
     expect(e.maxHealth).toBe(e.health);
@@ -189,22 +189,22 @@ describe('Enemy', () => {
   test('types: fast', () => {
     const e = new G.Enemy(1, 'fast');
     expect(e.radius).toBe(8); expect(e.speed).toBe(2.5);
-    expect(e.health).toBe(50); expect(e.reward).toBe(25);
+    expect(e.health).toBe(50); expect(e.reward).toBe(13);
   });
   test('types: tank', () => {
     const e = new G.Enemy(1, 'tank');
     expect(e.radius).toBe(18); expect(e.speed).toBeCloseTo(0.8, 1);
-    expect(e.health).toBe(200); expect(e.reward).toBe(35);
+    expect(e.health).toBe(200); expect(e.reward).toBe(20);
   });
   test('types: flying', () => {
     const e = new G.Enemy(1, 'flying');
     expect(e.radius).toBe(10); expect(e.speed).toBe(2);
-    expect(e.health).toBe(80); expect(e.reward).toBe(38);
+    expect(e.health).toBe(80); expect(e.reward).toBe(19);
   });
   test('boss overrides', () => {
     const e = new G.Enemy(1, 'boss');
     expect(e.radius).toBe(25); expect(e.speed).toBeCloseTo(0.5, 1);
-    expect(e.health).toBe(1000); expect(e.reward).toBe(600);
+    expect(e.health).toBe(1000); expect(e.reward).toBe(300);
     expect(e.boss).toBe(true);
   });
   test('update moves along path', () => {

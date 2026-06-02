@@ -311,28 +311,28 @@
                     this.radius = 8;
                     this.speed = 2.5 * difficultyMultiplier;
                     this.health = 50 * difficultyMultiplier;
-                    this.reward = 20 + (waveDifficulty * 5);
+                    this.reward = 10 + (waveDifficulty * 3);
                 } else if (type === 'tank') {
                     this.radius = 18;
                     this.speed = 0.8 * difficultyMultiplier;
                     this.health = 200 * difficultyMultiplier;
-                    this.reward = 25 + (waveDifficulty * 10);
+                    this.reward = 15 + (waveDifficulty * 5);
                 } else if (type === 'flying') {
                     this.radius = 10;
                     this.speed = 2 * difficultyMultiplier;
                     this.health = 80 * difficultyMultiplier;
-                    this.reward = 30 + (waveDifficulty * 8);
+                    this.reward = 15 + (waveDifficulty * 4);
                 } else {
                     this.speed = 1.5 * difficultyMultiplier;
                     this.health = 100 * difficultyMultiplier;
-                    this.reward = 15 + (waveDifficulty * 5);
+                    this.reward = 10 + (waveDifficulty * 2);
                 }
 
                 if (type === 'boss') {
                     this.radius = 25;
                     this.speed = 0.5 * difficultyMultiplier;
                     this.health = 1000 * difficultyMultiplier;
-                    this.reward = 500 + (waveDifficulty * 100);
+                    this.reward = 250 + (waveDifficulty * 50);
                     this.boss = true;
                 }
                 this.maxHealth = this.health;
