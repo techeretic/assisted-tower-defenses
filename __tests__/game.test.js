@@ -241,11 +241,11 @@ describe('Enemy', () => {
     e.takeDamage(e.health);
     expect(G.money).toBe(e.reward);
   });
-  test('boss takeDamage awards bonus', () => {
+  test('boss takeDamage awards reward', () => {
     G.money = 0;
     const e = new G.Enemy(1, 'boss');
     e.takeDamage(e.health);
-    expect(G.money).toBe(e.reward + 500);
+    expect(G.money).toBe(e.reward);
   });
 });
 
@@ -369,7 +369,7 @@ describe('FloatingText', () => {
 describe('PowerUp', () => {
   test('random type is valid', () => {
     for (let i = 20; i--;) {
-      expect(['money','heal','damage']).toContain(new G.PowerUp(100,100).type);
+      expect(['heal','damage']).toContain(new G.PowerUp(100,100).type);
     }
   });
   test('life countdown', () => {
@@ -500,12 +500,12 @@ describe('toggleSound()', () => {
 //  clearTowers
 // ─────────────────────────────────────────────────────────────────────────────
 describe('clearTowers()', () => {
-  test('removes all towers and refunds', () => {
+  test('removes all towers', () => {
     G.towers.push(new G.Tower(100, 100, 1), new G.Tower(200, 200, 2));
     G.money = 0;
     G.clearTowers();
     expect(G.towers.length).toBe(0);
-    expect(G.money).toBe(25);
+    expect(G.money).toBe(0);
   });
   test('empty towers does not error', () => {
     G.towers = [];
