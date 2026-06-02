@@ -39,11 +39,21 @@ adb shell am start -n com.towerdefense/.MainActivity
 
 ## Testing
 
+### Game logic
+
 ```bash
 npm test
 ```
 
 76 unit tests cover core game logic (`isOnPath`, `Enemy`, `Tower`, `Projectile`), input handling (`handleInput`, `getCanvasCoordinates`), state management (`saveGame`/`loadGame`, `togglePause`, `startWave`, `endGame`), and edge cases. Tests use Jest with jsdom and mock browser APIs (Canvas, AudioContext, localStorage).
+
+### Android (ScoreStore)
+
+```bash
+cd TowerDefenseApp && ./gradlew testDebugUnitTest
+```
+
+8 unit tests cover the `ScoreStore` Kotlin bridge — high-score save/load, sorting, 10-entry cap, field preservation, and clearing.
 
 ## Features
 
@@ -78,6 +88,7 @@ npm test
 | `jest.config.js` | Jest environment setup (jsdom) |
 | `jest.setup.js` | Browser API mocks (Canvas, AudioContext, localStorage) |
 | `__tests__/game.test.js` | 76 unit tests for game logic and state management |
+| `TowerDefenseApp/…/ScoreStoreTest.kt` | 8 unit tests for the high-score persistence bridge |
 
 ## Tech stack
 
